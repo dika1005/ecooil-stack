@@ -1,0 +1,21 @@
+tunnel: YOUR_TUNNEL_ID_HERE
+credentials-file: /home/YOUR_USERNAME/.cloudflared/YOUR_TUNNEL_ID.json
+protocol: http2
+
+ingress:
+  # Rute untuk API (Path /api/ dan di bawahnya) di domain utama
+  # IMPORTANT: Use /api/ not /api* to avoid matching asset files like api-xyz.js
+  - hostname: your-domain.com
+    path: /api/
+    service: http://127.0.0.1:5050
+
+  # Rute untuk Frontend (Catch-all) di domain utama
+  - hostname: your-domain.com
+    service: http://127.0.0.1:3000
+
+  # Legacy API Domain (Optional)
+  - hostname: api.your-domain.com
+    service: http://127.0.0.1:5050
+
+  # Catch-all rule
+  - service: http_status:404

@@ -1,0 +1,99 @@
+# ========================================
+# EcoOil Stack - Docker Compose
+# ========================================
+# Usage:
+#   Development: docker compose up -d
+#   Production:  docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Services:
+#   - db:  MariaDB database
+#   - api: Elysia API server
+#   - web: SolidStart web application
+# ========================================
+
+services:
+  # ----------------------------------------
+  # MariaDB Database
+  # ----------------------------------------
+  db:
+    image: mariadb:11
+    container_name: ecooil-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-ecooil}
+      MYSQL_USER: ${DB_USER:-ecooil}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ecooilpassword}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ecooil-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - ecooil-network
+
+  # ----------------------------------------
+  # API Server (Elysia + Prisma)
+  # ----------------------------------------
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: ecooil-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 5050
+      DATABASE_URL: mysql://${DB_USER:-ecooil}:${DB_PASSWORD:-ecooilpassword}@db:3306/${DB_NAME:-ecooil}
+      # Individual database variables for Prisma MariaDB adapter
+      DATABASE_HOST: db
+      DATABASE_USER: ${DB_USER:-ecooil}
+      DATABASE_PASSWORD: ${DB_PASSWORD:-ecooilpassword}
+      DATABASE_NAME: ${DB_NAME:-ecooil}
+      DATABASE_PORT: 3306
+      JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+    ports:
+      - "${API_PORT:-5050}:5050"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ecooil-network
+
+  # ----------------------------------------
+  # Web Application (SolidStart)
+  # ----------------------------------------
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: ecooil-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      VITE_API_URL: ${VITE_API_URL:-http://api:5050}
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+    networks:
+      - ecooil-network
+
+# ----------------------------------------
+# Volumes
+# ----------------------------------------
+volumes:
+  ecooil-db-data:
+    driver: local
+
+# ----------------------------------------
+# Networks
+# ----------------------------------------
+networks:
+  ecooil-network:
+    driver: bridge

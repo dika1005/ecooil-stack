@@ -1,0 +1,49 @@
+# ========================================
+# EcoOil API - Docker Ignore
+# ========================================
+
+# Dependencies (install fresh in container)
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Generated files (will be regenerated)
+generated/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+coverage/
+*.lcov
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Misc
+README.md
+*.md
+tests/

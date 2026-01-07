@@ -1,0 +1,156 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+generator prismabox {
+  provider = "prismabox"
+  typeboxImportDependencyName = "elysia"
+  typeboxImportVariableName = "t"
+  inputModel = true
+  output   = "../generated/prismabox"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Peran {
+  USER      // Rumah Tangga
+  DRIVER    // Mitra Kolektor
+  INDUSTRI  // Pabrik
+  ADMIN     // Admin Sistem
+}
+
+enum StatusOrder {
+  MENUNGGU
+  DIJEMPUT
+  SELESAI
+  BATAL
+}
+
+enum StatusTransfer {
+  PENDING
+  SUKSES
+  GAGAL
+}
+
+enum StatusBayar {
+  BELUM_BAYAR
+  LUNAS
+}
+
+// 3. Model Database
+
+model User {
+  id_user         Int      @id @default(autoincrement())
+  email           String   @unique
+  password        String
+  peran           Peran    @default(USER)
+  nama_lengkap    String
+  no_hp           String   @db.VarChar(20)
+  alamat_lengkap  String?  @db.Text
+  koordinat_lat   Decimal? @db.Decimal(10, 8)
+  koordinat_long  Decimal? @db.Decimal(11, 8)
+  created_at      DateTime @default(now())
+
+  // Relasi
+  dompet          Dompet?
+  penarikan_dana  PenarikanDana[]
+  pesanan_bulk    PesananBulk[]
+  
+  // Relasi ganda ke Pesanan:
+  // 1. Sebagai Penjual (User Rumah Tangga)
+  pesanan_penjual Pesanan[] @relation("UserSebagaiPenjual")
+  // 2. Sebagai Penjemput (Mitra Driver)
+  pesanan_driver  Pesanan[] @relation("UserSebagaiDriver")
+
+  @@map("users")
+}
+
+model Dompet {
+  id_dompet     Int      @id @default(autoincrement())
+  id_user       Int      @unique // One-to-One dengan User
+  saldo_terkini Decimal  @default(0.00) @db.Decimal(15, 2)
+  tgl_update    DateTime @updatedAt
+
+  // Relasi
+  user          User     @relation(fields: [id_user], references: [id_user])
+
+  @@map("dompet")
+}
+
+model HargaHarian {
+  id_harga            Int      @id @default(autoincrement())
+  tanggal             DateTime @db.Date
+  harga_beli_per_liter Decimal @db.Decimal(10, 2) // Harga beli dari user
+  harga_jual_industri  Decimal @db.Decimal(10, 2) // Harga jual ke pabrik
+
+  @@map("harga_harian")
+}
+
+model Pesanan {
+  id_pesanan      Int         @id @default(autoincrement())
+  
+  // Foreign Keys
+  id_user         Int         // User yang punya limbah
+  id_driver       Int?        // Driver yang menjemput (bisa null diawal)
+  
+  tanggal_pesan   DateTime    @default(now())
+  status_order    StatusOrder @default(MENUNGGU)
+  
+  // Data Estimasi (Input User)
+  vol_estimasi    Decimal     @db.Decimal(10, 2)
+  // PENTING: Gunakan LongText untuk Base64 agar muat string panjang
+  foto_sampah_base64 String   @db.LongText 
+
+  // Data Real (Input Driver)
+  vol_real             Decimal? @db.Decimal(10, 2)
+  // PENTING: Gunakan LongText untuk Base64
+  bukti_timbang_base64 String?  @db.LongText 
+  
+  // Keuangan
+  harga_per_liter_saat_itu Decimal? @db.Decimal(10, 2)
+  total_bayar              Decimal? @db.Decimal(15, 2)
+
+  // Relasi
+  user_penjual    User      @relation("UserSebagaiPenjual", fields: [id_user], references: [id_user])
+  driver_penjemput User?    @relation("UserSebagaiDriver", fields: [id_driver], references: [id_user])
+
+  @@map("pesanan")
+}
+
+model PenarikanDana {
+  id_penarikan    Int            @id @default(autoincrement())
+  id_user         Int
+  nominal         Decimal        @db.Decimal(15, 2)
+  bank_tujuan     String
+  nomor_rekening  String
+  status_transfer StatusTransfer @default(PENDING)
+  tgl_request     DateTime       @default(now())
+
+  // Relasi
+  user            User           @relation(fields: [id_user], references: [id_user])
+
+  @@map("penarikan_dana")
+}
+
+model PesananBulk {
+  id_bulk         Int         @id @default(autoincrement())
+  id_industri     Int
+  total_tonase    Decimal     @db.Decimal(10, 2)
+  total_tagihan   Decimal     @db.Decimal(20, 2)
+  status_pembayaran StatusBayar @default(BELUM_BAYAR)
+  tgl_order       DateTime    @default(now())
+
+  // Relasi
+  industri        User        @relation(fields: [id_industri], references: [id_user])
+
+  @@map("pesanan_bulk")
+}

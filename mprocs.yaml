@@ -1,0 +1,12 @@
+procs:
+  # Nama Proses: Backend
+  API (Elysia):
+    cwd: apps/api # Masuk ke folder api
+    shell: bun run dev # Jalankan dev server
+    stop: SIGINT # Cara stop yang aman
+
+  # Nama Proses: Frontend
+  WEB (Solid):
+    cwd: apps/web # Masuk ke folder web
+    shell: bun run dev # Jalankan dev server  
+    stop: SIGINT

@@ -1,0 +1,10 @@
+node_modules
+dist
+.output
+.vinxi
+generated
+coverage
+*.min.js
+*.min.css
+bun.lock
+package-lock.json

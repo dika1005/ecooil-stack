@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   MapPin,
+  Truck,
 } from "lucide-solid";
 import type { Peran } from "~/types";
 
@@ -31,6 +32,7 @@ const MENUS: Record<
   ],
   DRIVER: [
     { label: "Job Radar", href: "/dashboard/driver", icon: MapPin },
+    { label: "Tugas Saya", href: "/dashboard/driver/tugas", icon: Truck },
     { label: "Riwayat", href: "/dashboard/driver/history", icon: Briefcase },
   ],
   INDUSTRI: [

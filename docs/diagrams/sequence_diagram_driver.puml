@@ -1,0 +1,27 @@
+@startuml
+actor "Mitra Driver" as Driver
+boundary "Halaman Job" as UI
+database "Sistem Backend" as BE
+
+Driver -> UI : Buka Detail Order Aktif
+UI --> Driver : Tampilkan Data User
+
+Driver -> UI : Input Volume Real & Foto Bukti
+Driver -> UI : Klik "Selesaikan Order"
+
+activate UI
+    UI -> BE : Kirim Data Finalisasi (PUT)
+    activate BE
+    
+    ' Proses Backend Lurus (Tanpa Error Handling)
+    BE -> BE : Ambil Data Harga Harian
+    BE -> BE : Kalkulasi Total (Vol Real * Harga)
+    BE -> BE : Update Saldo User & Driver
+    BE -> BE : Update Status Order (Selesai)
+    
+    BE --> UI : Return Invoice Data
+    deactivate BE
+    
+    UI --> Driver : Tampilkan "Transaksi Berhasil"
+deactivate UI
+@enduml

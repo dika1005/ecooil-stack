@@ -9,8 +9,12 @@ export const industriRoutes = new Elysia({ prefix: "/api/industri" }).group("", 
 
     // Get available stock
     .get("/stok", async () => {
-      const stock = await bulkService.getAvailableStock();
-      return successResponse(stock, "Berhasil", "/api/industri/stok");
+      const stockData = await bulkService.getAvailableStock();
+      // Map service response to Frontend interface { total_stok: number }
+      return successResponse({ 
+        total_stok: stockData.stok_tersedia_liter,
+        pending_orders: 0 // Placeholder as explicit pending orders logic is not yet in service
+      }, "Berhasil", "/api/industri/stok");
     })
 
     // Create bulk order

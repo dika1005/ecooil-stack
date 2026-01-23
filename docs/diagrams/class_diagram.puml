@@ -1,0 +1,225 @@
+@startuml EcoOil Class Diagram
+' ========================================
+' ECOOIL - CLASS DIAGRAM
+' Struktur Entity dan Relasi Database
+' ========================================
+
+skinparam backgroundColor #FEFEFE
+skinparam class {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+  ArrowColor #2E7D32
+}
+skinparam enum {
+  BackgroundColor #FFF9C4
+  BorderColor #FF8F00
+}
+
+title Class Diagram: Sistem EcoOil
+
+' === ENUMERATIONS ===
+package "Enumerations" #EEEEEE {
+  
+  enum Peran {
+    USER
+    DRIVER
+    INDUSTRI
+    ADMIN
+  }
+  
+  enum StatusOrder {
+    MENUNGGU
+    DIJEMPUT
+    SELESAI
+    BATAL
+  }
+  
+  enum StatusTransfer {
+    PENDING
+    SUKSES
+    GAGAL
+  }
+  
+  enum StatusBayar {
+    BELUM_BAYAR
+    LUNAS
+  }
+}
+
+' === ENTITIES ===
+package "Entities" #E3F2FD {
+  
+  class User {
+    - id_user: Int <<PK>>
+    - email: String <<unique>>
+    - password: String
+    - peran: Peran
+    - nama_lengkap: String
+    - no_hp: String
+    - alamat_lengkap: String?
+    - koordinat_lat: Decimal?
+    - koordinat_long: Decimal?
+    - created_at: DateTime
+    ==
+    + register()
+    + login()
+    + updateProfile()
+  }
+  
+  class Dompet {
+    - id_dompet: Int <<PK>>
+    - id_user: Int <<FK, unique>>
+    - saldo_terkini: Decimal
+    - tgl_update: DateTime
+    ==
+    + getBalance()
+    + addBalance(amount)
+    + deductBalance(amount)
+  }
+  
+  class HargaHarian {
+    - id_harga: Int <<PK>>
+    - tanggal: Date
+    - harga_beli_per_liter: Decimal
+    - harga_jual_industri: Decimal
+    ==
+    + getTodayPrice()
+    + setPrice()
+    + getPriceHistory()
+  }
+  
+  class Pesanan {
+    - id_pesanan: Int <<PK>>
+    - id_user: Int <<FK>>
+    - id_driver: Int? <<FK>>
+    - tanggal_pesan: DateTime
+    - status_order: StatusOrder
+    - vol_estimasi: Decimal
+    - foto_sampah_base64: LongText
+    - vol_real: Decimal?
+    - bukti_timbang_base64: LongText?
+    - harga_per_liter_saat_itu: Decimal?
+    - total_bayar: Decimal?
+    ==
+    + createOrder()
+    + cancelOrder()
+    + claimOrder(driverId)
+    + completeOrder(volReal, buktiTimbang)
+    + calculatePayment()
+  }
+  
+  class PenarikanDana {
+    - id_penarikan: Int <<PK>>
+    - id_user: Int <<FK>>
+    - nominal: Decimal
+    - bank_tujuan: String
+    - nomor_rekening: String
+    - status_transfer: StatusTransfer
+    - tgl_request: DateTime
+    ==
+    + requestWithdrawal()
+    + approve()
+    + reject()
+  }
+  
+  class PesananBulk {
+    - id_bulk: Int <<PK>>
+    - id_industri: Int <<FK>>
+    - total_tonase: Decimal
+    - total_tagihan: Decimal
+    - status_pembayaran: StatusBayar
+    - tgl_order: DateTime
+    ==
+    + createBulkOrder()
+    + confirmPayment()
+    + getAvailableStock()
+  }
+}
+
+' === SERVICES ===
+package "Services" #FFF3E0 {
+  
+  class AuthService {
+    + register(data): User
+    + login(email, password): TokenPayload
+    + getCurrentUser(userId): User
+    + hashPassword(password): String
+    + verifyPassword(password, hash): Boolean
+  }
+  
+  class PesananService {
+    + createOrder(userId, data): Pesanan
+    + getUserOrders(userId, page, limit): PaginatedResult
+    + getOrderById(id): Pesanan
+    + cancelOrder(id, userId): void
+    + getPendingJobs(page, limit): PaginatedResult
+    + claimOrder(id, driverId): Pesanan
+    + getActiveTasks(driverId, page, limit): PaginatedResult
+    + completeOrder(id, driverId, data): Pesanan
+  }
+  
+  class DompetService {
+    + getBalance(userId): Dompet
+    + addBalance(userId, amount): Dompet
+    + deductBalance(userId, amount): Dompet
+  }
+  
+  class PenarikanService {
+    + requestWithdrawal(userId, data): PenarikanDana
+    + getUserWithdrawals(userId, page, limit): PaginatedResult
+    + getAllWithdrawals(page, limit, status?): PaginatedResult
+    + getPendingWithdrawals(page, limit): PaginatedResult
+    + approveWithdrawal(id): PenarikanDana
+    + rejectWithdrawal(id): PenarikanDana
+  }
+  
+  class HargaService {
+    + getTodayPrice(): HargaHarian
+    + setPrice(data): HargaHarian
+    + getPriceHistory(page, limit): PaginatedResult
+  }
+  
+  class BulkService {
+    + getAvailableStock(): StockInfo
+    + createBulkOrder(industriId, data): PesananBulk
+    + getIndustriOrders(industriId, page, limit): PaginatedResult
+    + confirmPayment(id, industriId): PesananBulk
+  }
+  
+  class UserService {
+    + getProfile(userId): User
+    + updateProfile(userId, data): User
+    + listUsers(page, limit, peran?): PaginatedResult
+    + getUserById(id): User
+  }
+}
+
+' === RELATIONSHIPS ===
+
+' Entity Relationships
+User "1" -- "0..1" Dompet : memiliki >
+User "1" -- "*" Pesanan : sebagai penjual >
+User "1" -- "*" Pesanan : sebagai driver >
+User "1" -- "*" PenarikanDana : mengajukan >
+User "1" -- "*" PesananBulk : sebagai industri >
+
+' Enum Relationships
+User --> Peran
+Pesanan --> StatusOrder
+PenarikanDana --> StatusTransfer
+PesananBulk --> StatusBayar
+
+' Service to Entity Relationships (dashed)
+AuthService ..> User : manages
+PesananService ..> Pesanan : manages
+PesananService ..> Dompet : updates
+PesananService ..> HargaHarian : uses
+DompetService ..> Dompet : manages
+PenarikanService ..> PenarikanDana : manages
+PenarikanService ..> Dompet : updates
+HargaService ..> HargaHarian : manages
+BulkService ..> PesananBulk : manages
+BulkService ..> HargaHarian : uses
+UserService ..> User : manages
+
+@enduml

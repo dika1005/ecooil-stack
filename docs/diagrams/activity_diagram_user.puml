@@ -1,0 +1,31 @@
+@startuml
+|User (Rumah Tangga)|
+start
+:Login ke Sistem;
+:Masuk ke Dashboard User;
+:Pilih Menu "Setor Jelantah";
+:Sistem Menampilkan Form Request;
+
+|Sistem|
+:Tampilkan Form Upload & Lokasi;
+
+|User (Rumah Tangga)|
+:Upload Foto Limbah;
+:Input Alamat & Estimasi Volume;
+:Klik "Request Pickup";
+
+|Sistem|
+:Validasi Data Input;
+if (Data Lengkap?) then (Ya)
+    :Simpan Order ke Database;
+    :Broadcast ke Driver Terdekat;
+    :Tampilkan Notifikasi Sukses;
+else (Tidak)
+    :Tampilkan Pesan Error;
+    detach
+endif
+
+|User (Rumah Tangga)|
+:Melihat Status "Menunggu Driver";
+stop
+@enduml

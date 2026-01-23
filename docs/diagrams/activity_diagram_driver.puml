@@ -1,0 +1,44 @@
+@startuml
+|Mitra Driver|
+start
+:Login ke Sistem;
+:Masuk ke Dashboard Driver;
+:Melihat Job Radar (Order Masuk);
+:Klik "Ambil Order";
+
+|Sistem|
+:Update Status Order (OTW);
+:Tampilkan Rute ke Lokasi User;
+
+|Mitra Driver|
+:Tiba di Lokasi User;
+:Cek Fisik Limbah (Quality Control);
+
+if (Kualitas Layak?) then (Ya)
+    :Timbang Limbah di Depan User;
+    :Input Volume Real (Liter/Kg);
+    :Upload Foto Timbangan;
+    :Klik "Selesaikan Order";
+    
+    |Sistem|
+    :Ambil Harga Harian Terbaru;
+    :Hitung Total Bayar (Vol x Harga);
+    :Update Saldo Dompet User & Driver;
+    :Update Status Order (Selesai);
+    :Tampilkan Invoice Digital;
+    
+    |Mitra Driver|
+    :Terima Notifikasi Transaksi Berhasil;
+else (Tidak / Oplosan)
+    |Mitra Driver|
+    :Jelaskan Alasan ke User;
+    :Klik "Tolak Order";
+    :Input Alasan Penolakan;
+    
+    |Sistem|
+    :Update Status Order (Batal);
+    :Kirim Notifikasi ke User;
+endif
+
+stop
+@enduml

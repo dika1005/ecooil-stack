@@ -4,6 +4,7 @@ import pesananRepository, {
 } from "../repositories/pesanan.repository";
 import dompetRepository from "../repositories/dompet.repository";
 import hargaService from "./harga.service";
+import prisma from "../lib/prisma";
 
 const pesananService = {
   async createOrder(id_user: number, data: CreatePesananDTO) {
@@ -67,15 +68,38 @@ const pesananService = {
 
     // Get current price
     const harga_per_liter = await hargaService.getHargaBeliPerLiter();
-
-    // Complete the order
-    const completed = await pesananRepository.complete(id_pesanan, data, harga_per_liter);
-
-    // Add money to user's wallet
     const total_bayar = data.vol_real * harga_per_liter;
-    await dompetRepository.addSaldo(pesanan.id_user, total_bayar);
 
-    return completed;
+    // Use transaction to ensure atomicity - both order update and wallet update succeed together
+    return prisma.$transaction(async (tx) => {
+      // 1. Complete the order
+      const completed = await tx.pesanan.update({
+        where: { id_pesanan },
+        data: {
+          vol_real: data.vol_real,
+          bukti_timbang_base64: data.bukti_timbang_base64,
+          harga_per_liter_saat_itu: harga_per_liter,
+          total_bayar: total_bayar,
+          status_order: "SELESAI",
+        },
+      });
+
+      // 2. Find or create user's wallet
+      let dompet = await tx.dompet.findUnique({ where: { id_user: pesanan.id_user } });
+      if (!dompet) {
+        dompet = await tx.dompet.create({
+          data: { id_user: pesanan.id_user, saldo_terkini: 0 },
+        });
+      }
+
+      // 3. Add money to user's wallet (within same transaction)
+      await tx.dompet.update({
+        where: { id_user: pesanan.id_user },
+        data: { saldo_terkini: Number(dompet.saldo_terkini) + total_bayar },
+      });
+
+      return completed;
+    });
   },
 
   async cancelOrder(id_pesanan: number, id_user: number) {

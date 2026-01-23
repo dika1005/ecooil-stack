@@ -1,0 +1,26 @@
+@startuml
+actor "User (Rumah Tangga)" as User
+boundary "Halaman Request" as UI
+database "Sistem Backend" as BE
+
+User -> UI : Buka Menu "Setor Jelantah"
+UI --> User : Tampilkan Form Request
+
+User -> UI : Upload Foto & Input Estimasi
+User -> UI : Klik "Request Pickup"
+
+activate UI
+    UI -> BE : Kirim Data Order (POST)
+    activate BE
+    
+    ' Proses Backend Lurus (Tanpa Percabangan Error)
+    BE -> BE : Validasi Input
+    BE -> BE : Simpan Order (Status: Pending)
+    BE -> BE : Broadcast ke Driver Area
+    
+    BE --> UI : Konfirmasi Sukses
+    deactivate BE
+    
+    UI --> User : Tampilkan Pesan "Mencari Driver"
+deactivate UI
+@enduml

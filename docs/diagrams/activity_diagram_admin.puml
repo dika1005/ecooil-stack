@@ -1,0 +1,41 @@
+@startuml
+title Activity Diagram - Admin (Validasi Penarikan Saldo)
+
+|Admin Sistem|
+start
+:Login ke Sistem;
+:Masuk ke Dashboard Admin;
+:Pilih Menu "Withdrawal Request";
+
+|Sistem|
+:Tampilkan Daftar Request Pending;
+
+|Admin Sistem|
+:Pilih Request untuk Diproses;
+:Cek Detail Request & Saldo User;
+
+if (Data Valid & Saldo Cukup?) then (Ya)
+    :Proses Transfer Dana ke Rekening User;
+    :Upload Bukti Transfer;
+    :Klik "Approve Withdrawal";
+    
+    |Sistem|
+    :Update Status Withdrawal (Selesai);
+    :Kurangi Saldo Locked User;
+    :Kirim Notifikasi ke User;
+    
+    |Admin Sistem|
+    :Terima Konfirmasi Sukses;
+else (Tidak)
+    |Admin Sistem|
+    :Klik "Reject Withdrawal";
+    :Input Alasan Penolakan;
+    
+    |Sistem|
+    :Update Status Withdrawal (Ditolak);
+    :Kembalikan Saldo User (Unlock);
+    :Kirim Notifikasi Ditolak;
+endif
+
+stop
+@enduml

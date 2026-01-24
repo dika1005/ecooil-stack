@@ -10,14 +10,14 @@ import { ENDPOINTS } from "~/lib/endpoints";
 
 interface Tugas {
   id_pesanan: number;
-  alamat_jemput: string;
   tanggal_pesan: string;
   vol_estimasi: number;
   vol_real: number | null;
   status_order: string;
-  user?: {
+  user_penjual?: {
     nama_lengkap: string;
     no_hp: string;
+    alamat_lengkap: string | null;
   };
 }
 
@@ -197,12 +197,12 @@ export default function TugasSaya() {
                 </CardHeader>
                 <CardContent class="space-y-3">
                   <div>
-                    <h3 class="font-medium">{t.user?.nama_lengkap || "User"}</h3>
-                    <p class="text-secondary-500 text-sm">{t.user?.no_hp || "-"}</p>
+                    <h3 class="font-medium">{t.user_penjual?.nama_lengkap || "User"}</h3>
+                    <p class="text-secondary-500 text-sm">{t.user_penjual?.no_hp || "-"}</p>
                   </div>
                   <div class="text-secondary-600 flex items-start">
                     <MapPin class="mt-0.5 mr-2 h-4 w-4 shrink-0" />
-                    <p class="line-clamp-2 text-sm">{t.alamat_jemput || "-"}</p>
+                    <p class="line-clamp-2 text-sm">{t.user_penjual?.alamat_lengkap || "-"}</p>
                   </div>
                   <div class="text-sm">
                     Volume: <span class="font-bold">{t.vol_real || t.vol_estimasi} L</span>

@@ -14,7 +14,6 @@ const hargaService = {
       id_harga: 0,
       tanggal: new Date(),
       harga_beli_per_liter: 5000,
-      harga_jual_industri: 7000,
     };
   },
 
@@ -28,10 +27,6 @@ const hargaService = {
 
   async getHargaBeliPerLiter() {
     return hargaRepository.getHargaBeliPerLiter();
-  },
-
-  async getHargaJualIndustri() {
-    return hargaRepository.getHargaJualIndustri();
   },
 };
 

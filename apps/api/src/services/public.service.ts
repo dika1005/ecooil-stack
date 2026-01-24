@@ -29,7 +29,6 @@ const publicService = {
     if (today) {
       return {
         harga_beli_per_liter: Number(today.harga_beli_per_liter),
-        harga_jual_industri: Number(today.harga_jual_industri),
         tanggal: today.tanggal,
       };
     }
@@ -38,7 +37,6 @@ const publicService = {
     if (latest) {
       return {
         harga_beli_per_liter: Number(latest.harga_beli_per_liter),
-        harga_jual_industri: Number(latest.harga_jual_industri),
         tanggal: latest.tanggal,
       };
     }
@@ -46,7 +44,6 @@ const publicService = {
     // Default fallback
     return {
       harga_beli_per_liter: 5000,
-      harga_jual_industri: 7000,
       tanggal: new Date(),
     };
   },

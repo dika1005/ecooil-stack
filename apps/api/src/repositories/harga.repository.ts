@@ -3,7 +3,6 @@ import prisma from "../lib/prisma";
 // Inline DTO
 export interface CreateHargaDTO {
   harga_beli_per_liter: number;
-  harga_jual_industri: number;
   tanggal?: Date;
 }
 
@@ -37,7 +36,6 @@ export const hargaRepository = {
       data: {
         tanggal,
         harga_beli_per_liter: data.harga_beli_per_liter,
-        harga_jual_industri: data.harga_jual_industri,
       },
     });
   },
@@ -61,12 +59,6 @@ export const hargaRepository = {
     const harga = (await this.getToday()) || (await this.getLatest());
     if (!harga) return 5000; // Default fallback
     return Number(harga.harga_beli_per_liter);
-  },
-
-  async getHargaJualIndustri(): Promise<number> {
-    const harga = (await this.getToday()) || (await this.getLatest());
-    if (!harga) return 7000; // Default fallback
-    return Number(harga.harga_jual_industri);
   },
 };
 

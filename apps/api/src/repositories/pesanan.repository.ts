@@ -16,6 +16,18 @@ export interface CompletePesananDTO {
 
 export const pesananRepository = {
   async create(id_user: number, data: CreatePesananDTO) {
+    // Update user's address if provided
+    if (data.alamat_lengkap || data.koordinat_lat || data.koordinat_long) {
+      await prisma.user.update({
+        where: { id_user },
+        data: {
+          ...(data.alamat_lengkap && { alamat_lengkap: data.alamat_lengkap }),
+          ...(data.koordinat_lat && { koordinat_lat: data.koordinat_lat }),
+          ...(data.koordinat_long && { koordinat_long: data.koordinat_long }),
+        },
+      });
+    }
+
     return prisma.pesanan.create({
       data: {
         id_user,
@@ -37,6 +49,7 @@ export const pesananRepository = {
       },
     });
   },
+
 
   async findById(id_pesanan: number) {
     return prisma.pesanan.findUnique({

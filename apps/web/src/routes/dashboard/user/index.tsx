@@ -61,10 +61,10 @@ export default function UserDashboard() {
           <CardContent>
             <div class="text-secondary-900 text-3xl font-bold">
               <Show when={!loading()} fallback="...">
-                {pesanan().reduce(
-                  (acc: number, p: Pesanan) => acc + (p.vol_real || p.vol_estimasi || 0),
-                  0
-                )}{" "}
+                {pesanan()
+                  .filter((p: Pesanan) => p.status_order === "SELESAI")
+                  .reduce((acc: number, p: Pesanan) => acc + Number(p.vol_real || 0), 0)
+                  .toFixed(1)}{" "}
                 L
               </Show>
             </div>

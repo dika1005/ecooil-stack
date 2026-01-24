@@ -35,10 +35,6 @@ const MENUS: Record<
     { label: "Tugas Saya", href: "/dashboard/driver/tugas", icon: Truck },
     { label: "Riwayat", href: "/dashboard/driver/history", icon: Briefcase },
   ],
-  INDUSTRI: [
-    { label: "Beranda", href: "/dashboard/industri", icon: LayoutDashboard },
-    { label: "Stok Minyak", href: "/dashboard/industri/stok", icon: Factory },
-  ],
   SUPER_ADMIN: [],
 };
 

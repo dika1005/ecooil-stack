@@ -12,6 +12,7 @@ export default function Register() {
     password: "",
     nama_lengkap: "",
     no_hp: "",
+    alamat_lengkap: "",
   });
   const [error, setError] = createSignal("");
   const [isLoading, setIsLoading] = createSignal(false);
@@ -84,6 +85,14 @@ export default function Register() {
                 label="Nomor HP"
                 placeholder="08..."
                 value={formData().no_hp}
+                onInput={handleChange}
+                required
+              />
+              <Input
+                id="alamat_lengkap"
+                label="Alamat Lengkap"
+                placeholder="Jl. Contoh No. 123, Kelurahan, Kecamatan, Kota"
+                value={formData().alamat_lengkap}
                 onInput={handleChange}
                 required
               />

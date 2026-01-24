@@ -24,7 +24,6 @@ datasource db {
 enum Peran {
   USER      // Rumah Tangga
   DRIVER    // Mitra Kolektor
-  INDUSTRI  // Pabrik
   ADMIN     // Admin Sistem
 }
 
@@ -39,11 +38,6 @@ enum StatusTransfer {
   PENDING
   SUKSES
   GAGAL
-}
-
-enum StatusBayar {
-  BELUM_BAYAR
-  LUNAS
 }
 
 // 3. Model Database
@@ -63,7 +57,6 @@ model User {
   // Relasi
   dompet          Dompet?
   penarikan_dana  PenarikanDana[]
-  pesanan_bulk    PesananBulk[]
   
   // Relasi ganda ke Pesanan:
   // 1. Sebagai Penjual (User Rumah Tangga)
@@ -90,7 +83,6 @@ model HargaHarian {
   id_harga            Int      @id @default(autoincrement())
   tanggal             DateTime @db.Date
   harga_beli_per_liter Decimal @db.Decimal(10, 2) // Harga beli dari user
-  harga_jual_industri  Decimal @db.Decimal(10, 2) // Harga jual ke pabrik
 
   @@map("harga_harian")
 }
@@ -139,18 +131,4 @@ model PenarikanDana {
   user            User           @relation(fields: [id_user], references: [id_user])
 
   @@map("penarikan_dana")
-}
-
-model PesananBulk {
-  id_bulk         Int         @id @default(autoincrement())
-  id_industri     Int
-  total_tonase    Decimal     @db.Decimal(10, 2)
-  total_tagihan   Decimal     @db.Decimal(20, 2)
-  status_pembayaran StatusBayar @default(BELUM_BAYAR)
-  tgl_order       DateTime    @default(now())
-
-  // Relasi
-  industri        User        @relation(fields: [id_industri], references: [id_user])
-
-  @@map("pesanan_bulk")
 }

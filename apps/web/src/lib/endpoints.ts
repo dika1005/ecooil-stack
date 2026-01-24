@@ -29,12 +29,6 @@ export const ENDPOINTS = {
     COMPLETE: (id: number) => `/api/driver/complete/${id}`,
   },
 
-  // Industri
-  INDUSTRI: {
-    STOK: "/api/industri/stok",
-    BULK: "/api/industri/bulk",
-  },
-
   // Admin
   ADMIN: {
     USERS: "/api/admin/users",

@@ -1,0 +1,84 @@
+@startuml
+actor "Admin Sistem" as Admin
+boundary "Halaman Admin" as UI
+database "Sistem Backend" as BE
+
+== Proses Validasi Withdrawal Request ==
+
+Admin -> UI : Buka Menu "Withdrawal Request"
+UI -> BE : Ambil Daftar Request Pending (GET)
+activate BE
+BE --> UI : Return Daftar Request
+deactivate BE
+
+UI --> Admin : Tampilkan Daftar Request
+
+Admin -> UI : Pilih Request & Klik "Approve"
+Admin -> UI : Upload Bukti Transfer
+
+activate UI
+    UI -> BE : Kirim Approval (PUT)
+    activate BE
+    
+    ' Proses Backend Lurus (Tanpa Error Handling)
+    BE -> BE : Validasi Request
+    BE -> BE : Update Status (Selesai)
+    BE -> BE : Kurangi Saldo User
+    BE -> BE : Catat Log Transaksi
+    
+    BE --> UI : Konfirmasi Sukses
+    deactivate BE
+    
+    UI --> Admin : Tampilkan "Withdrawal Berhasil Diproses"
+deactivate UI
+
+== Proses Validasi Pembayaran PO Industri ==
+
+Admin -> UI : Buka Menu "Validasi PO"
+UI -> BE : Ambil Daftar PO Pending (GET)
+activate BE
+BE --> UI : Return Daftar PO
+deactivate BE
+
+UI --> Admin : Tampilkan Daftar PO Pending
+
+Admin -> UI : Pilih PO & Cek Bukti Bayar
+Admin -> UI : Klik "Approve Pembayaran"
+
+activate UI
+    UI -> BE : Kirim Approval PO (PUT)
+    activate BE
+    
+    ' Proses Backend Lurus (Tanpa Error Handling)
+    BE -> BE : Validasi Bukti Bayar
+    BE -> BE : Update Status PO (Lunas)
+    BE -> BE : Kurangi Stok Gudang
+    BE -> BE : Generate Surat Jalan
+    
+    BE --> UI : Return Data Invoice
+    deactivate BE
+    
+    UI --> Admin : Tampilkan "Pembayaran Tervalidasi"
+deactivate UI
+
+== Proses Update Harga Harian ==
+
+Admin -> UI : Buka Menu "Atur Harga"
+UI --> Admin : Tampilkan Form Harga
+
+Admin -> UI : Input Harga Beli & Harga Jual
+Admin -> UI : Klik "Simpan Harga"
+
+activate UI
+    UI -> BE : Kirim Data Harga Baru (POST)
+    activate BE
+    
+    BE -> BE : Simpan Harga ke Database
+    BE -> BE : Set Berlaku Mulai Sekarang
+    
+    BE --> UI : Konfirmasi Sukses
+    deactivate BE
+    
+    UI --> Admin : Tampilkan "Harga Berhasil Diupdate"
+deactivate UI
+@enduml

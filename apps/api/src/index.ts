@@ -6,7 +6,6 @@ import "dotenv/config";
 import authRoutes from "./routes/auth.routes";
 import userRoutes from "./routes/user.routes";
 import driverRoutes from "./routes/driver.routes";
-import industriRoutes from "./routes/industri.routes";
 import adminRoutes from "./routes/admin.routes";
 import publicRoutes from "./routes/public.routes";
 
@@ -40,7 +39,6 @@ const app = new Elysia()
   .use(publicRoutes)
   .use(adminRoutes)
   .use(driverRoutes)
-  .use(industriRoutes)
   .use(userRoutes)
 
   // Error handler

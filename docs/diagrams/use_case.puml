@@ -4,7 +4,6 @@ skinparam packageStyle rectangle
 
 actor "User (Rumah Tangga)" as user
 actor "Mitra Kolektor (Driver)" as driver
-actor "Industri Pengolah" as industry
 actor "Admin Sistem" as admin
 
 rectangle "Sistem Manajemen Jelantah (EcoOil)" {
@@ -18,15 +17,12 @@ rectangle "Sistem Manajemen Jelantah (EcoOil)" {
     ' Driver Cases
     usecase "Terima Order Jemput" as UC5
     usecase "Input Timbangan & Verifikasi" as UC6
-    usecase "Update Status ke Gudang" as UC7
-    
-    ' Industry Cases
-    usecase "Lihat Stok Bulk" as UC8
-    usecase "Beli Stok Besar (B2B)" as UC9
+    usecase "Selesaikan Pengantaran" as UC7
     
     ' Admin Cases
-    usecase "Validasi Pembayaran" as UC10
+    usecase "Validasi Penarikan Dana" as UC10
     usecase "Kelola User & Mitra" as UC11
+    usecase "Atur Harga Beli" as UC12
 }
 
 ' Relasi User
@@ -41,14 +37,9 @@ driver --> UC5
 driver --> UC6
 driver --> UC7
 
-' Relasi Industry
-industry --> UC1
-industry --> UC8
-industry --> UC9
-
 ' Relasi Admin
 admin --> UC10
 admin --> UC11
-admin --> UC9 : "Proses PO"
+admin --> UC12
 
 @enduml

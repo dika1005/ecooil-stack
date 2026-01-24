@@ -62,20 +62,20 @@ export default function JobRadar() {
                   <Badge variant="info">Perlu Jemput</Badge>
                   <span class="text-secondary-400 flex items-center text-xs">
                     <Clock class="mr-1 h-3 w-3" />
-                    {formatDate(job.tgl_dibuat)}
+                    {formatDate(job.tanggal_pesan)}
                   </span>
                 </CardHeader>
                 <CardContent class="space-y-4">
                   <div>
-                    <h3 class="text-lg font-medium">{job.user?.nama_lengkap || "User"}</h3>
-                    <p class="text-secondary-500 text-sm">{job.user?.no_hp || "-"}</p>
+                    <h3 class="text-lg font-medium">{job.user_penjual?.nama_lengkap || "User"}</h3>
+                    <p class="text-secondary-500 text-sm">{job.user_penjual?.no_hp || "-"}</p>
                     <div class="text-secondary-600 mt-2 flex items-start">
                       <MapPin class="mt-0.5 mr-2 h-4 w-4 shrink-0" />
-                      <p class="line-clamp-2 text-sm">{job.alamat_jemput || "-"}</p>
+                      <p class="line-clamp-2 text-sm">{job.user_penjual?.alamat_lengkap || "-"}</p>
                     </div>
                   </div>
                   <div class="text-secondary-500 text-sm">
-                    Estimasi: <span class="text-secondary-900 font-bold">{job.vol_est} L</span>
+                    Estimasi: <span class="text-secondary-900 font-bold">{job.vol_estimasi} L</span>
                   </div>
                 </CardContent>
                 <CardFooter>

@@ -7,6 +7,7 @@ export interface RegisterDTO {
   password: string;
   nama_lengkap: string;
   no_hp: string;
+  alamat_lengkap?: string;
   peran?: Peran;
 }
 
@@ -49,6 +50,7 @@ export const userRepository = {
         password: data.password,
         nama_lengkap: data.nama_lengkap,
         no_hp: data.no_hp,
+        alamat_lengkap: data.alamat_lengkap,
         peran: data.peran || "USER",
       },
     });

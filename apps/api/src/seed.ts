@@ -77,26 +77,6 @@ async function main() {
   });
   console.log("✅ Driver created:", driver.email);
 
-  // Create sample industry
-  const industriPassword = await Bun.password.hash("industri123", {
-    algorithm: "bcrypt",
-    cost: 10,
-  });
-
-  const industri = await prisma.user.upsert({
-    where: { email: "pabrik@ecooil.id" },
-    update: {},
-    create: {
-      email: "pabrik@ecooil.id",
-      password: industriPassword,
-      nama_lengkap: "PT Biodiesel Nusantara",
-      no_hp: "081234567893",
-      peran: "INDUSTRI",
-      alamat_lengkap: "Kawasan Industri Cikarang, Bekasi",
-    },
-  });
-  console.log("✅ Industry created:", industri.email);
-
   // Create today's price
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -105,15 +85,13 @@ async function main() {
     where: { id_harga: 1 },
     update: {
       harga_beli_per_liter: 5000,
-      harga_jual_industri: 7000,
     },
     create: {
       tanggal: today,
       harga_beli_per_liter: 5000,
-      harga_jual_industri: 7000,
     },
   });
-  console.log("✅ Daily price set: Rp 5.000/liter (buy), Rp 7.000/liter (sell)");
+  console.log("✅ Daily price set: Rp 5.000/liter");
 
   // Create sample pesanan with different statuses
   const sampleImage = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
@@ -180,7 +158,6 @@ async function main() {
   console.log("   Admin:    admin@ecooil.id / admin123");
   console.log("   User:     user@ecooil.id / user123");
   console.log("   Driver:   driver@ecooil.id / driver123");
-  console.log("   Industry: pabrik@ecooil.id / industri123");
 }
 
 main()

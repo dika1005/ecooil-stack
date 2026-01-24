@@ -7,7 +7,16 @@ export interface Pesanan {
   vol_real: number | null;
   status_order: string;
   tanggal_pesan: string;
+  tgl_dibuat?: string;
   total_bayar: number | null;
+  user_penjual?: {
+    id_user: number;
+    nama_lengkap: string;
+    alamat_lengkap: string | null;
+    no_hp: string;
+    koordinat_lat: number | null;
+    koordinat_long: number | null;
+  };
   driver_penjemput?: {
     nama_lengkap: string;
     no_hp: string;

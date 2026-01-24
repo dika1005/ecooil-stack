@@ -66,7 +66,6 @@ export const adminRoutes = new Elysia({ prefix: "/api/admin" }).group("", (app) 
         try {
           const data = {
             harga_beli_per_liter: body.harga_beli_per_liter,
-            harga_jual_industri: body.harga_jual_industri,
             tanggal: body.tanggal ? new Date(body.tanggal) : undefined,
           };
           const harga = await hargaService.setPrice(data);
@@ -80,7 +79,6 @@ export const adminRoutes = new Elysia({ prefix: "/api/admin" }).group("", (app) 
       {
         body: t.Object({
           harga_beli_per_liter: t.Number({ minimum: 1 }),
-          harga_jual_industri: t.Number({ minimum: 1 }),
           tanggal: t.Optional(t.String()),
         }),
       }

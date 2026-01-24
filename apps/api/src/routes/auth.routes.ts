@@ -34,7 +34,8 @@ export const authRoutes = new Elysia({ prefix: "/api/auth" })
         password: t.String({ minLength: 6 }),
         nama_lengkap: t.String(),
         no_hp: t.String(),
-        peran: t.Optional(t.Union([t.Literal("USER"), t.Literal("DRIVER"), t.Literal("INDUSTRI")])),
+        alamat_lengkap: t.Optional(t.String()),
+        peran: t.Optional(t.Union([t.Literal("USER"), t.Literal("DRIVER")])),
       }),
     }
   )

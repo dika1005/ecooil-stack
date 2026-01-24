@@ -16,5 +16,5 @@ export const refreshToken = jwt({
 
 export interface AccessTokenPayload {
   id_user: number;
-  peran: "USER" | "ADMIN" | "INDUSTRI" | "DRIVER";
+  peran: "USER" | "ADMIN" | "DRIVER";
 }

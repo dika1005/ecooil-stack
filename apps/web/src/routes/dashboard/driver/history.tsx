@@ -19,15 +19,15 @@ import { ENDPOINTS } from "~/lib/endpoints";
 
 interface Riwayat {
   id_pesanan: number;
-  alamat_jemput: string;
   tanggal_pesan: string;
   tgl_selesai?: string;
   vol_estimasi: number;
   vol_real: number | null;
   status_order: string;
-  user?: {
+  user_penjual?: {
     nama_lengkap: string;
     no_hp: string;
+    alamat_lengkap: string | null;
   };
 }
 
@@ -74,7 +74,10 @@ export default function DriverHistory() {
   };
 
   const completedTasks = () => riwayat().filter((r) => r.status_order === "SELESAI");
-  const totalVolume = () => completedTasks().reduce((acc, r) => acc + (r.vol_real || 0), 0);
+  const totalVolume = () => {
+    const sum = completedTasks().reduce((acc, r) => acc + Number(r.vol_real || 0), 0);
+    return Number(sum.toFixed(1));
+  };
 
   return (
     <div class="space-y-6">
@@ -192,13 +195,13 @@ export default function DriverHistory() {
                           <User class="text-secondary-600 h-5 w-5" />
                         </div>
                         <div>
-                          <h3 class="font-medium">{r.user?.nama_lengkap || "User"}</h3>
-                          <p class="text-secondary-500 text-sm">{r.user?.no_hp || "-"}</p>
+                          <h3 class="font-medium">{r.user_penjual?.nama_lengkap || "User"}</h3>
+                          <p class="text-secondary-500 text-sm">{r.user_penjual?.no_hp || "-"}</p>
                         </div>
                       </div>
                       <div class="text-secondary-600 flex items-start">
                         <MapPin class="mt-0.5 mr-2 h-4 w-4 shrink-0" />
-                        <p class="text-sm">{r.alamat_jemput || "-"}</p>
+                        <p class="text-sm">{r.user_penjual?.alamat_lengkap || "-"}</p>
                       </div>
                     </div>
                     <div class="text-right">

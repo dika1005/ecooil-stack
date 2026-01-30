@@ -5,7 +5,6 @@ import { Elysia } from "elysia";
 import { authRoutes } from "../src/routes/auth.routes";
 import { userRoutes } from "../src/routes/user.routes";
 import { driverRoutes } from "../src/routes/driver.routes";
-import { industriRoutes } from "../src/routes/industri.routes";
 import { adminRoutes } from "../src/routes/admin.routes";
 import { publicRoutes } from "../src/routes/public.routes";
 
@@ -16,7 +15,6 @@ export function createTestApp() {
     .use(publicRoutes)
     .use(userRoutes)
     .use(driverRoutes)
-    .use(industriRoutes)
     .use(adminRoutes);
 }
 
@@ -25,7 +23,6 @@ export const TEST_USERS = {
   admin: { email: "admin@ecooil.id", password: "admin123" },
   user: { email: "user@ecooil.id", password: "user123" },
   driver: { email: "driver@ecooil.id", password: "driver123" },
-  industri: { email: "pabrik@ecooil.id", password: "industri123" },
 };
 
 // Helper to make requests

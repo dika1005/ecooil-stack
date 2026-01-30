@@ -29,7 +29,6 @@ describe("Public API Tests", () => {
       const res = await request(app, "GET", "/api/public/harga");
       expect(res.data?.status).toBe("success");
       expect(res.data?.data).toHaveProperty("harga_beli_per_liter");
-      expect(res.data?.data).toHaveProperty("harga_jual_industri");
     });
   });
 
@@ -80,10 +79,6 @@ describe("Public API Tests", () => {
       expect(res.data?.data?.user?.peran).toBe("DRIVER");
     });
 
-    it("should login as INDUSTRI", async () => {
-      const res = await request(app, "POST", "/api/auth/login", { body: TEST_USERS.industri });
-      expect(res.data?.status).toBe("success");
-      expect(res.data?.data?.user?.peran).toBe("INDUSTRI");
-    });
+
   });
 });
